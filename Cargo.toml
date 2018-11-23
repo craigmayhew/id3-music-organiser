@@ -1,0 +1,10 @@
+[package]
+name = "id3-music-organiser"
+version = "0.1.0"
+authors = ["Craig Mayhew"]
+
+[dependencies]
+colored = "1.6"
+id3 = "0.2.5"
+regex = "1"
+walkdir = "2"
