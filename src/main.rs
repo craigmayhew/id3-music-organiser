@@ -108,3 +108,26 @@ fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
     println!("  Album Tag: {}", &album);
 	album
 }
+
+#[cfg(test)]
+mod album {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+	fn mock_id3_option(input_string: &str) -> Option<&str> {
+		if input_string == "" {
+			None
+		} else {
+			Some(input_string)
+		}
+	}
+
+    #[test]
+    fn test_album() {
+		let str_mock_album = "Album".to_string();
+		let str_mock_album_artist = "Album".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), str_mock_album);
+    }
+}
