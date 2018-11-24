@@ -173,7 +173,7 @@ mod title {
         assert_eq!(artist(option_mock_id3_title), str_mock_title);
 	}
 	#[test]
-	//check a bunch of bad characters are actually removed from the returned artist name
+	//check a bunch of bad characters are actually removed from the returned title name
 	//e.g. "Title$1" becomes "Title1"
 	fn title_remove_bad_chars() {
 		let str_mock_title = "!,.<>/;:abc*&^".to_string();
