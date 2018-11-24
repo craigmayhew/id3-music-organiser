@@ -13,10 +13,6 @@ use walkdir::WalkDir;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {
-    lazy_static! {
-        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
-	}
-
 	let destination = "sorted".to_string();
     let mut file_mv_counter:i64 = 0;
     let mut file_skipped_counter:i64 = 0;
@@ -41,7 +37,7 @@ fn main() -> std::io::Result<()> {
                 let album: String = album(tag.album(),tag.album_artist());
 				println!("  Album Tag: {}", &album);
 
-                let title = RE_GOOD_CHARS_ONLY.replace_all(tag.title().unwrap(), "").to_string();
+				let title = title(tag.title());
                 println!("  Title: {}", title);
 
                 let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album, &title);
@@ -146,6 +142,44 @@ mod destination_path_with_file_name {
 
 		teardown();
 	}
+}
+
+fn title(tag_title: Option<&str>) -> std::string::String {
+    lazy_static! {
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+	}
+    let title = RE_GOOD_CHARS_ONLY.replace_all(tag_title.unwrap(), "").to_string();
+	title
+}
+
+#[cfg(test)]
+mod title {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+	fn mock_id3_option(input_string: &str) -> Option<&str> {
+		if input_string == "" {
+			None
+		} else {
+			Some(input_string)
+		}
+	}
+
+	#[test]
+	//Check we can read the title id3 tag
+    fn title_basic() {
+		let str_mock_title = "Test Title Name".to_string();
+		let option_mock_id3_title = mock_id3_option(&str_mock_title);
+        assert_eq!(artist(option_mock_id3_title), str_mock_title);
+	}
+	#[test]
+	//check a bunch of bad characters are actually removed from the returned artist name
+	//e.g. "Title$1" becomes "Title1"
+	fn title_remove_bad_chars() {
+		let str_mock_title = "!,.<>/;:abc*&^".to_string();
+		let option_mock_id3_title = mock_id3_option(&str_mock_title);
+        assert_eq!(artist(option_mock_id3_title), "abc".to_string());
+    }
 }
 
 fn artist(tag_artist: Option<&str>) -> std::string::String {
