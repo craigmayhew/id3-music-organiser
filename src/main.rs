@@ -40,28 +40,8 @@ fn main() -> std::io::Result<()> {
                 let title = RE_GOOD_CHARS_ONLY.replace_all(tag.title().unwrap(), "").to_string();
                 println!("  Title: {}", title);
 
-
-                let mut destination_filename: String = "".to_owned();;
-                destination_filename.push_str(&title);
-                destination_filename.push_str(".mp3");
-
-                let mut destination: String = "sorted".to_owned();
-                destination.push_str("/");
-                destination.push_str(&artist);
-                destination.push_str("/");
-                destination.push_str(&album);
-                destination.push_str("/");
-
-                println!("{}{}{}\n", "  COPYING FILE to ".cyan(), &destination.cyan(), destination_filename.cyan());
-
-                if Path::new(&destination).exists() {
-
-                } else {
-                    std::fs::create_dir_all(&destination)?;
-                }
-
-                destination.push_str(&destination_filename);
-                std::fs::copy(path, destination)?;
+                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &artist, &album, &title);
+                println!("{}{}\n", "  COPYING FILE to ".cyan(), destination_path_with_file_name.cyan());
 
                 file_mv_counter += 1;
             } else {
@@ -79,6 +59,31 @@ fn main() -> std::io::Result<()> {
     println!("----------------------------------\n{}{}", "  FILES COPIED ".green().bold(), file_mv_counter.to_string().bold());
     println!("{}{}",   "  FILES SKIPPED ".green().bold(), file_skipped_counter.to_string().bold());
     Ok(())
+}
+
+fn destination_path_with_file_name(path: &Path, artist: &str, album: &str, title: &str) -> std::string::String {
+	let mut destination_filename: String = "".to_owned();
+	destination_filename.push_str(&title);
+	destination_filename.push_str(".mp3");
+
+	let mut destination: String = "sorted".to_owned();
+	destination.push_str("/");
+	destination.push_str(&artist);
+	destination.push_str("/");
+	destination.push_str(&album);
+	destination.push_str("/");
+
+	if Path::new(&destination).exists() {
+
+    } else {
+        std::fs::create_dir_all(&destination);
+    }
+
+    destination.push_str(&destination_filename);
+    std::fs::copy(path, &destination);
+
+	//return new path and file name
+	destination
 }
 
 fn artist(tag_artist: Option<&str>) -> std::string::String {
