@@ -6,5 +6,6 @@ authors = ["Craig Mayhew"]
 [dependencies]
 colored = "1.6"
 id3 = "0.2.5"
+lazy_static = "1.2.0"
 regex = "1"
 walkdir = "2"

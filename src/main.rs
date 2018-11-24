@@ -1,3 +1,4 @@
+#[macro_use] extern crate lazy_static;
 extern crate colored;
 extern crate id3;
 extern crate regex;
@@ -9,8 +10,9 @@ use std::path::Path;
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
-    let re_remove_featuring = Regex::new(r"featuring(.*)").unwrap();
-    let re_good_chars_only = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+    lazy_static! {
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+	}
 
     let mut file_mv_counter:i64 = 0;
     let mut file_skipped_counter:i64 = 0;
@@ -35,24 +37,12 @@ fn main() -> std::io::Result<()> {
                 } else {
                     artist = "NA".to_string();
                 }
-                artist = re_good_chars_only.replace_all(&artist, "").to_string();
+                artist = RE_GOOD_CHARS_ONLY.replace_all(&artist, "").to_string();
                 println!("  Artist Tag: {}", artist);
 
-                let mut album: String;
-                if tag.album().is_some() {
-                    album = tag.album().unwrap().to_string();
-                } else if tag.album_artist().is_some() {
-                    album = tag.album_artist().unwrap().to_string();
-                } else {
-                    album = "NA".to_owned();
-                }
-                album = re_good_chars_only.replace_all(&album, "").to_string();
-                if album.contains("featuring") {
-                    album = re_remove_featuring.replace(&album, "").to_string();
-                }
-                println!("  Album Tag: {}", &album);
+                let album: String = album(tag.album(),tag.album_artist());
 
-                let title = re_good_chars_only.replace_all(tag.title().unwrap(), "").to_string();
+                let title = RE_GOOD_CHARS_ONLY.replace_all(tag.title().unwrap(), "").to_string();
                 println!("  Title: {}", title);
 
 
@@ -94,4 +84,27 @@ fn main() -> std::io::Result<()> {
     println!("----------------------------------\n{}{}", "  FILES COPIED ".green().bold(), file_mv_counter.to_string().bold());
     println!("{}{}",   "  FILES SKIPPED ".green().bold(), file_skipped_counter.to_string().bold());
     Ok(())
+}
+
+fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string::String {
+    let mut album: String;
+
+	lazy_static! {
+        static ref RE_REMOVE_FEATURING: Regex = Regex::new(r"featuring(.*)").unwrap();
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+	}
+
+    if tab_album.is_some() {
+        album = tab_album.unwrap().to_string();
+    } else if tag_album_artist.is_some() {
+        album = tag_album_artist.unwrap().to_string();
+    } else {
+        album = "NA".to_owned();
+    }
+    album = RE_GOOD_CHARS_ONLY.replace_all(&album, "").to_string();
+    if album.contains("featuring") {
+        album = RE_REMOVE_FEATURING.replace(&album, "").to_string();
+    }
+    println!("  Album Tag: {}", &album);
+	album
 }
