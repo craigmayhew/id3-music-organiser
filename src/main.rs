@@ -56,8 +56,6 @@ fn main() -> std::io::Result<()> {
             println!("{}{:?}\n", "  NO ATTRIBUTES FOUND for ".red(), path.display());
             file_skipped_counter += 1;
         }
-
-
     }
     println!("----------------------------------\n{}{}", "  FILES COPIED ".green().bold(), file_mv_counter.to_string().bold());
     println!("{}{}",   "  FILES SKIPPED ".green().bold(), file_skipped_counter.to_string().bold());
