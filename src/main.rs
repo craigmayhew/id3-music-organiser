@@ -9,6 +9,9 @@ use std::fs::File;
 use std::path::Path;
 use walkdir::WalkDir;
 
+//todo only include this "use" for running tests
+use std::io::Write;
+
 fn main() -> std::io::Result<()> {
     lazy_static! {
         static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
@@ -73,17 +76,77 @@ fn destination_path_with_file_name(path: &Path, artist: &str, album: &str, title
 	destination.push_str(&album);
 	destination.push_str("/");
 
-	if Path::new(&destination).exists() {
-
-    } else {
-        std::fs::create_dir_all(&destination);
+	if !Path::new(&destination).exists() {
+        let result = std::fs::create_dir_all(&destination);
+		match result {
+		    Ok(o) => o,
+			Err(_e) => panic!("create_dir_all failed with an error")
+		};
     }
 
     destination.push_str(&destination_filename);
-    std::fs::copy(path, &destination);
+    let result = std::fs::copy(path, &destination);
+	match result {
+		Ok(o) => o,
+		Err(_e) => panic!("std::fs::copy failed with an error")
+	};
 
 	//return new path and file name
 	destination
+}
+
+#[cfg(test)]
+mod destination_path_with_file_name {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+	fn setup () {
+	    let sorted_path = Path::new("sorted/unittest");
+	    if !sorted_path.exists() {
+			let result = std::fs::create_dir_all("sorted/unittest");
+			match result {
+				Ok(o) => o,
+				Err(_e) => panic!("create_dir_all failed with an error")
+			};
+		}
+
+	    let mut file = std::fs::File::create("sorted/unittest/example.mp3").unwrap();
+        file.write_all(b"Just unit testing!").unwrap();
+
+		let unsorted_path = Path::new("unsorted/unittest");
+	    if !unsorted_path.exists() {
+			let result = std::fs::create_dir_all("unsorted/unittest");
+			match result {
+				Ok(o) => o,
+				Err(_e) => panic!("create_dir_all failed with an error")
+			};
+		}
+	}
+
+	fn teardown () {
+	    let result = std::fs::remove_dir_all("sorted/unittest");
+		match result {
+			Ok(o) => o,
+			Err(_e) => panic!("remove_dir_all failed with an error")
+		};
+		let result = std::fs::remove_dir_all("unsorted/unittest");
+		match result {
+			Ok(o) => o,
+			Err(_e) => panic!("remove_dir_all failed with an error")
+		};
+	}
+
+    #[test]
+	//Check we create an mp3 file, in the correct folder structure
+    fn check_creates_file() {
+	    setup();
+		
+		let path = Path::new("sorted/unittest/example.mp3");
+        assert_eq!(destination_path_with_file_name(path, "artist", "album", "title"), "sorted/artist/album/title.mp3".to_owned());
+		//todo add a test to check the sorted file is actually where it's meant to be!
+
+		teardown();
+	}
 }
 
 fn artist(tag_artist: Option<&str>) -> std::string::String {
