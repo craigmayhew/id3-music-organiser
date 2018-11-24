@@ -123,11 +123,31 @@ mod album {
 	}
 
     #[test]
-    fn test_album() {
-		let str_mock_album = "Album".to_string();
-		let str_mock_album_artist = "Album".to_string();
+	//Check we can read the album id3 tag
+    fn album_basic() {
+		let str_mock_album = "Test Album Name".to_string();
+		let str_mock_album_artist = "".to_string();
 		let option_mock_id3_album = mock_id3_option(&str_mock_album);
 		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
         assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), str_mock_album);
+	}
+	#[test]
+	//check we can read the album_artist which sometimes is actually the name of the album
+	fn album_artist_basic() {
+		let str_mock_album = "".to_string();
+		let str_mock_album_artist = "Test Album Name".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), str_mock_album_artist);
+	}
+	#[test]
+	//check a bunch of bad characters are actually removed from the returned album name
+	//e.g. "Album$1" becomes "Album1"
+	fn album_remove_bad_chars() {
+		let str_mock_album = "!,.<>/;:abc*&^".to_string();
+		let str_mock_album_artist = "".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "abc".to_string());
     }
 }
