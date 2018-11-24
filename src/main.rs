@@ -194,7 +194,7 @@ mod artist {
 
 }
 
-fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string::String {
+fn album(tag_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string::String {
     let mut album: String;
 
 	lazy_static! {
@@ -203,8 +203,8 @@ fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
         static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
 	}
 
-    if tab_album.is_some() {
-        album = tab_album.unwrap().to_string();
+    if tag_album.is_some() {
+        album = tag_album.unwrap().to_string();
     } else if tag_album_artist.is_some() {
         album = tag_album_artist.unwrap().to_string();
     } else {
