@@ -41,6 +41,7 @@ fn main() -> std::io::Result<()> {
                 println!("  Artist Tag: {}", artist);
 
                 let album: String = album(tag.album(),tag.album_artist());
+				println!("  Album Tag: {}", &album);
 
                 let title = RE_GOOD_CHARS_ONLY.replace_all(tag.title().unwrap(), "").to_string();
                 println!("  Title: {}", title);
@@ -105,7 +106,6 @@ fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
     if album.contains("featuring") {
         album = RE_REMOVE_FEATURING.replace(&album, "").to_string();
     }
-    println!("  Album Tag: {}", &album);
 	album
 }
 
