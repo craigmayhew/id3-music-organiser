@@ -17,6 +17,7 @@ fn main() -> std::io::Result<()> {
         static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
 	}
 
+	let destination = "sorted".to_string();
     let mut file_mv_counter:i64 = 0;
     let mut file_skipped_counter:i64 = 0;
 
@@ -43,7 +44,7 @@ fn main() -> std::io::Result<()> {
                 let title = RE_GOOD_CHARS_ONLY.replace_all(tag.title().unwrap(), "").to_string();
                 println!("  Title: {}", title);
 
-                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &artist, &album, &title);
+                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album, &title);
                 println!("{}{}\n", "  COPYING FILE to ".cyan(), destination_path_with_file_name.cyan());
 
                 file_mv_counter += 1;
@@ -62,12 +63,12 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn destination_path_with_file_name(path: &Path, artist: &str, album: &str, title: &str) -> std::string::String {
+fn destination_path_with_file_name(path: &Path, destination_folder: &str, artist: &str, album: &str, title: &str) -> std::string::String {
 	let mut destination_filename: String = "".to_owned();
 	destination_filename.push_str(&title);
 	destination_filename.push_str(".mp3");
 
-	let mut destination: String = "sorted".to_owned();
+	let mut destination: String = destination_folder.to_owned();
 	destination.push_str("/");
 	destination.push_str(&artist);
 	destination.push_str("/");
@@ -99,21 +100,21 @@ mod destination_path_with_file_name {
     use super::*;
 
 	fn setup () {
-	    let sorted_path = Path::new("sorted/unittest");
+	    let sorted_path = Path::new("unittest-sorted");
 	    if !sorted_path.exists() {
-			let result = std::fs::create_dir_all("sorted/unittest");
+			let result = std::fs::create_dir_all("unittest-sorted");
 			match result {
 				Ok(o) => o,
 				Err(_e) => panic!("create_dir_all failed with an error")
 			};
 		}
 
-	    let mut file = std::fs::File::create("sorted/unittest/example.mp3").unwrap();
+	    let mut file = std::fs::File::create("unittest-sorted/example.mp3").unwrap();
         file.write_all(b"Just unit testing!").unwrap();
 
-		let unsorted_path = Path::new("unsorted/unittest");
+		let unsorted_path = Path::new("unittest-unsorted");
 	    if !unsorted_path.exists() {
-			let result = std::fs::create_dir_all("unsorted/unittest");
+			let result = std::fs::create_dir_all("unittest-unsorted");
 			match result {
 				Ok(o) => o,
 				Err(_e) => panic!("create_dir_all failed with an error")
@@ -122,12 +123,12 @@ mod destination_path_with_file_name {
 	}
 
 	fn teardown () {
-	    let result = std::fs::remove_dir_all("sorted/unittest");
+	    let result = std::fs::remove_dir_all("unittest-sorted");
 		match result {
 			Ok(o) => o,
 			Err(_e) => panic!("remove_dir_all failed with an error")
 		};
-		let result = std::fs::remove_dir_all("unsorted/unittest");
+		let result = std::fs::remove_dir_all("unittest-unsorted");
 		match result {
 			Ok(o) => o,
 			Err(_e) => panic!("remove_dir_all failed with an error")
@@ -139,8 +140,8 @@ mod destination_path_with_file_name {
     fn check_creates_file() {
 	    setup();
 		
-		let path = Path::new("sorted/unittest/example.mp3");
-        assert_eq!(destination_path_with_file_name(path, "artist", "album", "title"), "sorted/artist/album/title.mp3".to_owned());
+		let path = Path::new("unittest-sorted/example.mp3");
+        assert_eq!(destination_path_with_file_name(path, "unittest-sorted", "artist", "album", "title"), "unittest-sorted/artist/album/title.mp3".to_owned());
 		//todo add a test to check the sorted file is actually where it's meant to be!
 
 		teardown();
