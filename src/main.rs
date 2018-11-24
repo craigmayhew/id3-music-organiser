@@ -199,6 +199,7 @@ fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
 
 	lazy_static! {
         static ref RE_REMOVE_FEATURING: Regex = Regex::new(r"featuring(.*)").unwrap();
+		static ref RE_REMOVE_FEAT: Regex = Regex::new(r"feat\.(.*)").unwrap();
         static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
 	}
 
@@ -209,11 +210,16 @@ fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
     } else {
         album = "NA".to_owned();
     }
-    album = RE_GOOD_CHARS_ONLY.replace_all(&album, "").to_string();
+
     if album.contains("featuring") {
         album = RE_REMOVE_FEATURING.replace(&album, "").to_string();
     }
-	album
+	if album.contains("feat.") {
+        album = RE_REMOVE_FEAT.replace(&album, "").to_string();
+    }
+	album = RE_GOOD_CHARS_ONLY.replace_all(&album, "").to_string();
+
+	album.trim_right().to_string()
 }
 
 #[cfg(test)]
@@ -273,15 +279,15 @@ mod album {
 		let str_mock_album_artist = "".to_string();
 		let option_mock_id3_album = mock_id3_option(&str_mock_album);
 		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
-        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something ".to_string());
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something".to_string());
     }
 	#[test]
 	//check feat. featuring etc are truncated from album names
-	fn album_album_artist_featuring() {
+	fn album_album_artist_feat() {
 		let str_mock_album = "".to_string();
-		let str_mock_album_artist = "Something featuring someone".to_string();
+		let str_mock_album_artist = "Something feat. someone".to_string();
 		let option_mock_id3_album = mock_id3_option(&str_mock_album);
 		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
-        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something ".to_string());
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something".to_string());
     }
 }
