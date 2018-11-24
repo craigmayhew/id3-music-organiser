@@ -186,10 +186,16 @@ mod artist {
 	#[test]
 	//check a bunch of bad characters are actually removed from the returned artist name
 	//e.g. "Artist$1" becomes "Artist1"
-	fn album_remove_bad_chars() {
+	fn artist_remove_bad_chars() {
 		let str_mock_artist = "!,.<>/;:abc*&^".to_string();
 		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
         assert_eq!(artist(option_mock_id3_artist), "abc".to_string());
+    }
+	#[test]
+	fn artist_id3_tags_not_readable() {
+		let str_mock_artist = "".to_string();
+		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
+        assert_eq!(artist(option_mock_id3_artist), "NA".to_string());
     }
 
 }
