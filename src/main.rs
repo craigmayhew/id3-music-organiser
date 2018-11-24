@@ -31,13 +31,7 @@ fn main() -> std::io::Result<()> {
             if let Ok(_res) = id3::Tag::read_from_path(path) {
                 let tag = id3::Tag::read_from_path(path).unwrap();
 
-                let mut artist: String;
-                if tag.artist().is_some() {
-                    artist = tag.artist().unwrap().to_string();
-                } else {
-                    artist = "NA".to_string();
-                }
-                artist = RE_GOOD_CHARS_ONLY.replace_all(&artist, "").to_string();
+				let artist = artist(tag.artist());
                 println!("  Artist Tag: {}", artist);
 
                 let album: String = album(tag.album(),tag.album_artist());
@@ -85,6 +79,53 @@ fn main() -> std::io::Result<()> {
     println!("----------------------------------\n{}{}", "  FILES COPIED ".green().bold(), file_mv_counter.to_string().bold());
     println!("{}{}",   "  FILES SKIPPED ".green().bold(), file_skipped_counter.to_string().bold());
     Ok(())
+}
+
+fn artist(tag_artist: Option<&str>) -> std::string::String {
+	let mut artist: String;
+
+	lazy_static! {
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+	}
+
+	if tag_artist.is_some() {
+		artist = tag_artist.unwrap().to_string();
+	} else {
+		artist = "NA".to_string();
+	}
+	artist = RE_GOOD_CHARS_ONLY.replace_all(&artist, "").to_string();
+	artist
+}
+
+#[cfg(test)]
+mod artist {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+	fn mock_id3_option(input_string: &str) -> Option<&str> {
+		if input_string == "" {
+			None
+		} else {
+			Some(input_string)
+		}
+	}
+
+    #[test]
+	//Check we can read the album id3 tag
+    fn artist_basic() {
+		let str_mock_artist = "Test Artist Name".to_string();
+		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
+        assert_eq!(artist(option_mock_id3_artist), str_mock_artist);
+	}
+	#[test]
+	//check a bunch of bad characters are actually removed from the returned artist name
+	//e.g. "Artist$1" becomes "Artist1"
+	fn album_remove_bad_chars() {
+		let str_mock_artist = "!,.<>/;:abc*&^".to_string();
+		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
+        assert_eq!(artist(option_mock_id3_artist), "abc".to_string());
+    }
+
 }
 
 fn album(tab_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string::String {
