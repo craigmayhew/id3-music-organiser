@@ -257,4 +257,31 @@ mod album {
 		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
         assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "abc".to_string());
     }
+	#[test]
+	//check scenario where the album name can't be read
+	fn album_id3_tags_not_readable() {
+		let str_mock_album = "".to_string();
+		let str_mock_album_artist = "".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "NA".to_string());
+    }
+	#[test]
+	//check feat. featuring etc are truncated from album names
+	fn album_album_featuring() {
+		let str_mock_album = "Something featuring someone".to_string();
+		let str_mock_album_artist = "".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something ".to_string());
+    }
+	#[test]
+	//check feat. featuring etc are truncated from album names
+	fn album_album_artist_featuring() {
+		let str_mock_album = "".to_string();
+		let str_mock_album_artist = "Something featuring someone".to_string();
+		let option_mock_id3_album = mock_id3_option(&str_mock_album);
+		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "Something ".to_string());
+    }
 }
