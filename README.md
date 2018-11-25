@@ -13,7 +13,7 @@ A simple command line program to organise your mp3 files. Written in Rust. Build
 ```
 
 ## Roadmap ##
- 1. [x] Break code into testable functions
- 2. [x] Add tests and report coverage
- 3. [] Add command line switches e.g. --group-unknown-music or --create-album-folders
- 4. [] Launch version 1.0 with binary downloads
+ [x] Break code into testable functions
+ [x] Add tests and report coverage
+ [] Add command line switches e.g. --group-unknown-music or --create-album-folders
+ [] Launch version 1.0 with binary downloads
