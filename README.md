@@ -10,6 +10,7 @@ A simple command line program to organise your mp3 files. Written in Rust. Build
 ## Usage ##
 ```bash
 ./id3org
+./id3org --skipalbums
 ```
 
 ## Roadmap ##
