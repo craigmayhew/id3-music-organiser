@@ -19,6 +19,7 @@ use colored::*;
 use docopt::Docopt;
 use regex::Regex;
 use regex::RegexBuilder;
+use std::fs;
 use std::fs::File;
 #[cfg(test)]
 use std::io::Write;
@@ -134,12 +135,34 @@ fn destination_path_with_file_name(path: &Path, destination_folder: &str, artist
 		};
     }
 
+	//concat filename to the filepath
     destination.push_str(&destination_filename);
-    let result = std::fs::copy(path, &destination);
-	match result {
-		Ok(o) => o,
-		Err(_e) => panic!("std::fs::copy failed with an error")
-	};
+
+	//check if the file already exists
+	if Path::new(&destination).is_file() {
+		let sorted_file_metadata = match fs::metadata(&destination) {
+			Ok(o) => o,
+			Err(_e) => panic!("fs::metadata failed with an error")
+		};
+		let unsorted_file_metadata = match fs::metadata(&path) {
+			Ok(o) => o,
+			Err(_e) => panic!("fs::metadata failed with an error")
+		};
+	    //the file exists and we only want to overwrite it if the latest file is larger
+		if unsorted_file_metadata.len() > sorted_file_metadata.len() {
+		    let result = std::fs::copy(path, &destination);
+			match result {
+				Ok(o) => o,
+				Err(_e) => panic!("std::fs::copy failed with an error")
+			};
+		}
+	} else {
+		let result = std::fs::copy(path, &destination);
+		match result {
+			Ok(o) => o,
+			Err(_e) => panic!("std::fs::copy failed with an error")
+		};
+	}
 
 	//return new path and file name
 	destination
