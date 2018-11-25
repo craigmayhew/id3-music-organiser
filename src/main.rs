@@ -128,8 +128,7 @@ fn destination_path_with_file_name(path: &Path, destination_folder: &str, artist
 	destination.push_str("/");
 
 	if !Path::new(&destination).exists() {
-        let result = std::fs::create_dir_all(&destination);
-		match result {
+		match std::fs::create_dir_all(&destination) {
 		    Ok(o) => o,
 			Err(_e) => panic!("create_dir_all failed with an error")
 		};
@@ -150,15 +149,13 @@ fn destination_path_with_file_name(path: &Path, destination_folder: &str, artist
 		};
 	    //the file exists and we only want to overwrite it if the latest file is larger
 		if unsorted_file_metadata.len() > sorted_file_metadata.len() {
-		    let result = std::fs::copy(path, &destination);
-			match result {
+			match std::fs::copy(path, &destination) {
 				Ok(o) => o,
 				Err(_e) => panic!("std::fs::copy failed with an error")
 			};
 		}
 	} else {
-		let result = std::fs::copy(path, &destination);
-		match result {
+		match std::fs::copy(path, &destination) {
 			Ok(o) => o,
 			Err(_e) => panic!("std::fs::copy failed with an error")
 		};
@@ -176,8 +173,7 @@ mod destination_path_with_file_name {
 	fn setup () {
 	    let sorted_path = Path::new("unittest-sorted");
 	    if !sorted_path.exists() {
-			let result = std::fs::create_dir_all("unittest-sorted");
-			match result {
+			match std::fs::create_dir_all("unittest-sorted") {
 				Ok(o) => o,
 				Err(_e) => panic!("create_dir_all failed with an error")
 			};
@@ -188,8 +184,7 @@ mod destination_path_with_file_name {
 
 		let unsorted_path = Path::new("unittest-unsorted");
 	    if !unsorted_path.exists() {
-			let result = std::fs::create_dir_all("unittest-unsorted");
-			match result {
+			match std::fs::create_dir_all("unittest-unsorted") {
 				Ok(o) => o,
 				Err(_e) => panic!("create_dir_all failed with an error")
 			};
@@ -197,13 +192,11 @@ mod destination_path_with_file_name {
 	}
 
 	fn teardown () {
-	    let result = std::fs::remove_dir_all("unittest-sorted");
-		match result {
+		match std::fs::remove_dir_all("unittest-sorted") {
 			Ok(o) => o,
 			Err(_e) => panic!("remove_dir_all failed with an error")
 		};
-		let result = std::fs::remove_dir_all("unittest-unsorted");
-		match result {
+		match std::fs::remove_dir_all("unittest-unsorted") {
 			Ok(o) => o,
 			Err(_e) => panic!("remove_dir_all failed with an error")
 		};
