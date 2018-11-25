@@ -1,5 +1,5 @@
 [package]
-name = "id3-music-organiser"
+name = "id3org"
 version = "0.1.0"
 authors = ["Craig Mayhew"]
 
@@ -9,3 +9,7 @@ id3 = "0.2.5"
 lazy_static = "1.2.0"
 regex = "1"
 walkdir = "2"
+# needed for reading command line arguements
+docopt = "1"
+serde = "1.0" # if you're using `derive(Deserialize)`
+serde_derive = "1.0" # if you're using `derive(Deserialize)`

@@ -1,9 +1,22 @@
-#[macro_use] extern crate lazy_static;
+// required to allow us to create static regex and save cpu
+#[macro_use]
+extern crate lazy_static;
+//required for colours in our command line output
 extern crate colored;
+//required to read id3 tags from files
 extern crate id3;
+//required for any regex we run
 extern crate regex;
+//required to walk through a directory structure
 extern crate walkdir;
+//required by decopt
+#[macro_use]
+extern crate serde_derive;
+//required for accepting neat command line arguements
+extern crate docopt;
+
 use colored::*;
+use docopt::Docopt;
 use regex::Regex;
 use std::fs::File;
 #[cfg(test)]
@@ -11,11 +24,41 @@ use std::io::Write;
 use std::path::Path;
 use walkdir::WalkDir;
 
+const USAGE: &'static str = "
+ID3 Music Organiser.
+
+Usage:
+  id3org
+  id3org <unorganised> <organised>
+  id3org -h
+  id3org --help
+  id3org --skipalbums
+  id3org --version
+
+Options:
+  -h --help         Show this screen.
+  --version         Show version.
+  --skipalbums     Does not create album sub folders.
+";
+
+#[derive(Debug, Deserialize)]
+struct Args {
+    flag_skipalbums: bool,
+    arg_organised: Vec<String>,
+	arg_unorganised: Vec<String>,
+}
+
 fn main() -> std::io::Result<()> {
 	let destination = "sorted".to_string();
     let mut file_mv_counter:i64 = 0;
     let mut file_skipped_counter:i64 = 0;
 
+	/*
+	  process command line arguements and switches
+	*/
+	let args: docopt::ArgvMap = parse_config();
+
+	/*read through files, and copy them into new folder structure*/
     for entry in WalkDir::new("./unsorted").into_iter().filter_map(|e| e.ok()) {
         if !entry.file_type().is_file() {
             continue
@@ -33,13 +76,18 @@ fn main() -> std::io::Result<()> {
 				let artist = artist(tag.artist());
                 println!("  Artist Tag: {}", artist);
 
-                let album: String = album(tag.album(),tag.album_artist());
-				println!("  Album Tag: {}", &album);
+				let album_name: String;
+				if args.get_bool("--skipalbums") {
+				    album_name = "".to_string();
+				} else {
+                    album_name = album(tag.album(),tag.album_artist());
+				    println!("  Album Tag: {}", &album_name);
+				}
 
 				let title = title(tag.title());
                 println!("  Title: {}", title);
 
-                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album, &title);
+                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album_name, &title);
                 println!("{}{}\n", "  COPYING FILE to ".cyan(), destination_path_with_file_name.cyan());
 
                 file_mv_counter += 1;
@@ -56,6 +104,13 @@ fn main() -> std::io::Result<()> {
     println!("----------------------------------\n{}{}", "  FILES COPIED ".green().bold(), file_mv_counter.to_string().bold());
     println!("{}{}",   "  FILES SKIPPED ".green().bold(), file_skipped_counter.to_string().bold());
     Ok(())
+}
+
+//parse command line arguements/switches
+fn parse_config() -> (docopt::ArgvMap) {
+	Docopt::new(USAGE)
+		.and_then(|dopt| dopt.parse())
+		.unwrap_or_else(|e| e.exit())
 }
 
 fn destination_path_with_file_name(path: &Path, destination_folder: &str, artist: &str, album: &str, title: &str) -> std::string::String {
