@@ -257,6 +257,22 @@ fn artist(tag_artist: Option<&str>) -> std::string::String {
 	let mut artist: String;
 
 	lazy_static! {
+	    static ref RE_REMOVE_FEATURING: Regex = RegexBuilder::new(r"featuring(.*)")
+		                                                      .case_insensitive(true)
+															  .build()
+															  .expect("Invalid Regex");
+		static ref RE_REMOVE_FEAT: Regex = RegexBuilder::new(r"feat\.(.*)")
+		                                                      .case_insensitive(true)
+															  .build()
+                                                              .expect("Invalid Regex");
+	    static ref RE_REMOVE_FT: Regex = RegexBuilder::new(r" ft (.*)")
+		                                                      .case_insensitive(true)
+															  .build()
+                                                              .expect("Invalid Regex");
+		static ref RE_REMOVE_FT_DOT: Regex = RegexBuilder::new(r" ft\.(.*)")
+		                                                      .case_insensitive(true)
+															  .build()
+                                                              .expect("Invalid Regex");
         static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
 	}
 
@@ -265,8 +281,22 @@ fn artist(tag_artist: Option<&str>) -> std::string::String {
 	} else {
 		artist = "NA".to_string();
 	}
+
+	if artist.to_lowercase().contains("featuring") {
+        artist = RE_REMOVE_FEATURING.replace(&artist, "").to_string();
+    }
+	if artist.to_lowercase().contains("feat.") {
+        artist = RE_REMOVE_FEAT.replace(&artist, "").to_string();
+    }
+	if artist.to_lowercase().contains(" ft ") {
+        artist = RE_REMOVE_FT.replace(&artist, "").to_string();
+    }
+	if artist.to_lowercase().contains(" ft.") {
+        artist = RE_REMOVE_FT_DOT.replace(&artist, "").to_string();
+    }
+
 	artist = RE_GOOD_CHARS_ONLY.replace_all(&artist, "").to_string();
-	artist
+	artist.trim_right().to_string()
 }
 
 #[cfg(test)]
@@ -303,7 +333,20 @@ mod artist {
 		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
         assert_eq!(artist(option_mock_id3_artist), "NA".to_string());
     }
-
+	#[test]
+	//check case that ft is truncated from artist names
+	fn artist_remove_ft() {
+		let str_mock_artist = "Someone ft someone else".to_string();
+		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
+        assert_eq!(artist(option_mock_id3_artist), "Someone".to_string());
+    }
+	#[test]
+	//check case insensitivity of feat. featuring etc that are truncated from artist names
+	fn artist_remove_feat_case_insensitive() {
+		let str_mock_artist = "Someone FEat. someone else".to_string();
+		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
+        assert_eq!(artist(option_mock_id3_artist), "Someone".to_string());
+    }
 }
 
 fn album(tag_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string::String {
