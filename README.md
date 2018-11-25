@@ -18,5 +18,5 @@ You will need an "unsorted" directory containing your files. This folder should 
  - [x] Break code into testable functions
  - [x] Add tests and report coverage
  - [x] Add command line switches e.g. --skipalbums
- - [ ] Create a prelease for people to test
+ - [x] Create a prerelease for people to test
  - [ ] Launch version 1.0 with binary downloads
