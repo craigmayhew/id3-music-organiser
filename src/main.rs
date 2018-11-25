@@ -217,7 +217,7 @@ mod destination_path_with_file_name {
 
 fn title(tag_title: Option<&str>) -> std::string::String {
     lazy_static! {
-        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ &]").unwrap();
 	}
     let title = RE_GOOD_CHARS_ONLY.replace_all(tag_title.unwrap(), "").to_string();
 	title
@@ -249,7 +249,7 @@ mod title {
 	fn title_remove_bad_chars() {
 		let str_mock_title = "!,.<>/;:abc*&^".to_string();
 		let option_mock_id3_title = mock_id3_option(&str_mock_title);
-        assert_eq!(artist(option_mock_id3_title), "abc".to_string());
+        assert_eq!(artist(option_mock_id3_title), "abc&".to_string());
     }
 }
 
@@ -273,7 +273,7 @@ fn artist(tag_artist: Option<&str>) -> std::string::String {
 		                                                      .case_insensitive(true)
 															  .build()
                                                               .expect("Invalid Regex");
-        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ &]").unwrap();
 	}
 
 	if tag_artist.is_some() {
@@ -325,7 +325,7 @@ mod artist {
 	fn artist_remove_bad_chars() {
 		let str_mock_artist = "!,.<>/;:abc*&^".to_string();
 		let option_mock_id3_artist = mock_id3_option(&str_mock_artist);
-        assert_eq!(artist(option_mock_id3_artist), "abc".to_string());
+        assert_eq!(artist(option_mock_id3_artist), "abc&".to_string());
     }
 	#[test]
 	fn artist_id3_tags_not_readable() {
@@ -361,7 +361,7 @@ fn album(tag_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
 		                                                      .case_insensitive(true)
 															  .build()
                                                               .expect("Invalid Regex");
-        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ ]").unwrap();
+        static ref RE_GOOD_CHARS_ONLY: Regex = Regex::new(r"[^a-zA-Z0-9\-_ &]").unwrap();
 	}
 
     if tag_album.is_some() {
@@ -422,7 +422,7 @@ mod album {
 		let str_mock_album_artist = "".to_string();
 		let option_mock_id3_album = mock_id3_option(&str_mock_album);
 		let option_mock_id3_album_artist = mock_id3_option(&str_mock_album_artist);
-        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "abc".to_string());
+        assert_eq!(album(option_mock_id3_album, option_mock_id3_album_artist), "abc&".to_string());
     }
 	#[test]
 	//check scenario where the album name can't be read
