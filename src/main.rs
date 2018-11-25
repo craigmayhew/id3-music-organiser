@@ -6,11 +6,10 @@ extern crate walkdir;
 use colored::*;
 use regex::Regex;
 use std::fs::File;
+#[cfg(test)]
+use std::io::Write;
 use std::path::Path;
 use walkdir::WalkDir;
-
-//todo only include this "use" for running tests
-use std::io::Write;
 
 fn main() -> std::io::Result<()> {
 	let destination = "sorted".to_string();
