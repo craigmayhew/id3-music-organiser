@@ -19,4 +19,5 @@ You will need an "unsorted" directory containing your files. This folder should 
  - [x] Add tests and report coverage
  - [x] Add command line switches e.g. --skipalbums
  - [x] Create a prerelease for people to test
+ - [ ] Implement BDD https://github.com/bbqsrc/cucumber-rust
  - [ ] Launch version 1.0 with binary downloads
