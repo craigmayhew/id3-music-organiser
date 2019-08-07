@@ -67,7 +67,7 @@ fn main() -> std::io::Result<()> {
         }
 
         let path = entry.path();
-        let mut file = File::open(path)?;
+        let file = File::open(path)?;
 
         println!("\n{}: ", path.display());
 
@@ -89,7 +89,7 @@ fn main() -> std::io::Result<()> {
 				let title = title(tag.title());
                 println!("  Title: {}", title);
 
-                let mut destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album_name, &title);
+                let destination_path_with_file_name: String = destination_path_with_file_name(path, &destination, &artist, &album_name, &title);
                 println!("{}{}\n", "  COPYING FILE to ".cyan(), destination_path_with_file_name.cyan());
 
                 file_mv_counter += 1;
