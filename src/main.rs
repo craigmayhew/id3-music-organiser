@@ -298,7 +298,7 @@ fn artist(tag_artist: Option<&str>) -> std::string::String {
     }
 
 	artist = RE_GOOD_CHARS_ONLY.replace_all(&artist, "").to_string();
-	artist.trim_right().to_string()
+	artist.trim_end().to_string()
 }
 
 #[cfg(test)]
@@ -382,7 +382,7 @@ fn album(tag_album: Option<&str>, tag_album_artist: Option<&str>) -> std::string
     }
 	album = RE_GOOD_CHARS_ONLY.replace_all(&album, "").to_string();
 
-	album.trim_right().to_string()
+	album.trim_end().to_string()
 }
 
 #[cfg(test)]
