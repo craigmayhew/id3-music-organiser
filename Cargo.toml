@@ -7,7 +7,7 @@ authors = ["Craig Mayhew"]
 colored = "1.6"
 cucumber_rust = { version = "^0.5.0", default-features = false }
 id3 = "0.2.5"
-lazy_static = "1.2.0"
+lazy_static = "1.4.0"
 regex = "1"
 walkdir = "2"
 # needed for reading command line arguements
