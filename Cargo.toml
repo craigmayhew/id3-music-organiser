@@ -4,7 +4,7 @@ version = "0.1.1"
 authors = ["Craig Mayhew"]
 
 [dependencies]
-colored = "1.6"
+colored = "1.8"
 cucumber_rust = { version = "^0.5.0", default-features = false }
 id3 = "0.2.5"
 lazy_static = "1.2.0"
