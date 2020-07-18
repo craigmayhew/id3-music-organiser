@@ -19,6 +19,8 @@ impl std::default::Default for MyWorld {
 }
 
 mod default_steps {
+    use std::path::Path;
+
     // Any type that implements cucumber_rust::World + Default can be the world
     steps!(::MyWorld => {
         given "Music is in \"unsorted\" directory" |_world, _step| {
