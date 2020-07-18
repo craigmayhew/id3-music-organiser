@@ -41,7 +41,7 @@ mod default_steps {
 
         then "I am interested in ATDD" |world, _step| {
             // Check that the outcomes to be observed have occurred
-            assert_eq!(world.foo, "Some string.");
+            assert_eq!(world.foo, "a default string");
         };
 
         then regex r"^we can (.*) rules with regex$" |_world, matches, _step| {
