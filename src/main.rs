@@ -109,7 +109,7 @@ fn main() -> std::io::Result<()> {
 }
 
 //parse command line arguements/switches
-fn parse_config() -> (docopt::ArgvMap) {
+fn parse_config() -> docopt::ArgvMap {
 	Docopt::new(USAGE)
 		.and_then(|dopt| dopt.parse())
 		.unwrap_or_else(|e| e.exit())
