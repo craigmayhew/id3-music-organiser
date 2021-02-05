@@ -6,7 +6,7 @@ authors = ["Craig Mayhew"]
 [dependencies]
 colored = "2.0"
 cucumber_rust = { version = "^0.6.9", default-features = false }
-id3 = "0.5.1"
+id3 = "0.6.0"
 lazy_static = "1.2.0"
 regex = "1"
 walkdir = "2"
